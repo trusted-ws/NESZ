@@ -30,5 +30,5 @@ Word Bus::readNoncontinuousWord(Byte x, Byte y)
 
 Word Bus::readWord(Word addr)
 {
-    return readNoncontinuousWord(addr, addr++);
+    return readNoncontinuousWord(addr, addr + 1);
 }

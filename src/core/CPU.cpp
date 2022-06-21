@@ -11,7 +11,7 @@ CPU::CPU()
 
 bool CPU::getFlag(Flag flag)
 {
-    return p & flag != 0;
+    return p & (flag != 0);
 }
 
 void CPU::setFlag(Flag flag, bool value)
@@ -32,7 +32,7 @@ void CPU::setFlagsZeroNegative(Byte value)
 void CPU::setFlagsCarryOverflow(Byte m, Byte n, Word value)
 {
     setFlag(C, value > 0xFF);
-    setFlag(V, (m ^ value) & (n ^ value) & 0x80 != 0);
+    setFlag(V, (m ^ value) & (n ^ value) & (0x80 != 0));
 }
 
 Byte CPU::carry()
@@ -85,18 +85,20 @@ Word CPU::getAddr(Mode mode)
         case IND:
         {
             Word i = nextWord();
-            return bus.readNoncontinuousWord(i, Utils::highByte(i) | Utils::lowByte(i++));
+            
+            return bus.readNoncontinuousWord(i, Utils::highByte(i) | Utils::lowByte(i + 1));
+
         }
         case IZX:
         {
             bus.tick();
             Word i = Utils::offset(nextByte(), x);
-            return bus.readNoncontinuousWord(i, Utils::lowByte(i) | Utils::lowByte(i++));;
+            return bus.readNoncontinuousWord(i, Utils::lowByte(i) | Utils::lowByte(i + 1));;
         }
         case IZY:
         {
             Word i = nextWord();
-            Word data = bus.readNoncontinuousWord(i, Utils::lowByte(i++));
+            Word data = bus.readNoncontinuousWord(i, Utils::lowByte(i + 1));
 
             if (Utils::cross(data, y)) bus.tick();
 
